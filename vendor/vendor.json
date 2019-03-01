@@ -271,6 +271,12 @@
 			"revisionTime": "2017-01-17T13:00:17Z"
 		},
 		{
+			"checksumSHA1": "L3HoHVqp2EaBSOqBxB7l0PTyu7g=",
+			"path": "github.com/golang/snappy",
+			"revision": "2a8bb927dd31d8daada140a5d09578521ce5c36a",
+			"revisionTime": "2019-02-18T23:22:22Z"
+		},
+		{
 			"checksumSHA1": "wa0Kf+UNMo+htGTATzXGw8n3tEc=",
 			"path": "github.com/gosimple/slug",
 			"revision": "d8eda97f6ce6a447aa8ed204694bb5ce84f36b71",
@@ -311,10 +317,10 @@
 			"revisionTime": "2017-02-17T16:27:05Z"
 		},
 		{
-			"checksumSHA1": "/yKfFSspjuDzyOe/bBslrPzyfYM=",
+			"checksumSHA1": "9SqwC2BzFbsWulQuBG2+QEliTpo=",
 			"path": "github.com/hashicorp/go-retryablehttp",
-			"revision": "e651d75abec6fbd4f2c09508f72ae7af8a8b7171",
-			"revisionTime": "2018-07-18T19:50:05Z"
+			"revision": "73489d0a1476f0c9e6fb03f9c39241523a496dfd",
+			"revisionTime": "2019-01-26T20:33:39Z"
 		},
 		{
 			"checksumSHA1": "A1PcINvF3UiwHRKn8UcgARgvGRs=",
@@ -562,44 +568,60 @@
 			"versionExact": "v0.10.0"
 		},
 		{
-			"checksumSHA1": "Agqmy6rgChDCY8deGHJYANp2Jm4=",
+			"checksumSHA1": "40Sr9mgrra8tTf0VM1C86U65c3U=",
 			"path": "github.com/hashicorp/vault",
-			"revision": "8575f8fedcf8f5a6eb2b4701cb527b99574b5286",
-			"revisionTime": "2018-09-06T17:45:45Z",
-			"version": "v0.11.1",
-			"versionExact": "v0.11.1"
+			"revision": "85909e3373aa743c34a6a0ab59131f61fd9e8e43",
+			"revisionTime": "2019-02-12T14:05:52Z",
+			"version": "v1.0.3",
+			"versionExact": "v1.0.3"
 		},
 		{
-			"checksumSHA1": "+B4wuJNerIUKNAVzld7CmMaNW5A=",
+			"checksumSHA1": "laYVVZeqao4WdIS/MKd0be7Z3yA=",
 			"path": "github.com/hashicorp/vault/api",
-			"revision": "8575f8fedcf8f5a6eb2b4701cb527b99574b5286",
-			"revisionTime": "2018-09-06T17:45:45Z",
-			"version": "v0.11.1",
-			"versionExact": "v0.11.1"
+			"revision": "85909e3373aa743c34a6a0ab59131f61fd9e8e43",
+			"revisionTime": "2019-02-12T14:05:52Z",
+			"version": "v1.0.3",
+			"versionExact": "v1.0.3"
 		},
 		{
-			"checksumSHA1": "cYsW0ei8JxRNXy1ZHoHjYlBRDIQ=",
+			"checksumSHA1": "kQx99x1pqzfNoXPbs+Nq2Zr536A=",
 			"path": "github.com/hashicorp/vault/command/config",
-			"revision": "95978c208f0b4c0966f3ef2edc1c8ca62cfe3e2e",
-			"revisionTime": "2018-05-25T23:20:11Z"
+			"revision": "85909e3373aa743c34a6a0ab59131f61fd9e8e43",
+			"revisionTime": "2019-02-12T14:05:52Z",
+			"version": "v1.0.3",
+			"versionExact": "v1.0.3"
 		},
 		{
-			"checksumSHA1": "NKuji4DOr6kia0RGemhGbnHIb5Y=",
+			"checksumSHA1": "s1xu47OI605SLrAzi5jC6rpkYUQ=",
 			"path": "github.com/hashicorp/vault/command/token",
-			"revision": "95978c208f0b4c0966f3ef2edc1c8ca62cfe3e2e",
-			"revisionTime": "2018-05-25T23:20:11Z"
+			"revision": "85909e3373aa743c34a6a0ab59131f61fd9e8e43",
+			"revisionTime": "2019-02-12T14:05:52Z",
+			"version": "v1.0.3",
+			"versionExact": "v1.0.3"
 		},
 		{
-			"checksumSHA1": "ft77GtqeZEeCXioGpF/s6DlGm/U=",
+			"checksumSHA1": "t62AAua2AHm41SA3pdwGPedcdKY=",
 			"path": "github.com/hashicorp/vault/helper/compressutil",
-			"revision": "9a60bf2a50e4dd1ba4b929a3ccf8072435cbdd0a",
-			"revisionTime": "2016-10-29T21:01:49Z"
+			"revision": "85909e3373aa743c34a6a0ab59131f61fd9e8e43",
+			"revisionTime": "2019-02-12T14:05:52Z",
+			"version": "v1.0.3",
+			"versionExact": "v1.0.3"
 		},
 		{
-			"checksumSHA1": "yUiSTPf0QUuL2r/81sjuytqBoeQ=",
+			"checksumSHA1": "3mRK/pBPUH8rIPrILmuJWynWQVo=",
+			"path": "github.com/hashicorp/vault/helper/consts",
+			"revision": "85909e3373aa743c34a6a0ab59131f61fd9e8e43",
+			"revisionTime": "2019-02-12T14:05:52Z",
+			"version": "v1.0.3",
+			"versionExact": "v1.0.3"
+		},
+		{
+			"checksumSHA1": "POgkM3GrjRFw6H3sw95YNEs552A=",
 			"path": "github.com/hashicorp/vault/helper/jsonutil",
-			"revision": "9a60bf2a50e4dd1ba4b929a3ccf8072435cbdd0a",
-			"revisionTime": "2016-10-29T21:01:49Z"
+			"revision": "85909e3373aa743c34a6a0ab59131f61fd9e8e43",
+			"revisionTime": "2019-02-12T14:05:52Z",
+			"version": "v1.0.3",
+			"versionExact": "v1.0.3"
 		},
 		{
 			"checksumSHA1": "ZhK6IO2XN81Y+3RAjTcVm1Ic7oU=",
@@ -654,6 +676,18 @@
 			"path": "github.com/mitchellh/reflectwalk",
 			"revision": "92573fe8d000a145bfebc03a16bc22b34945867f",
 			"revisionTime": "2016-10-03T17:45:16Z"
+		},
+		{
+			"checksumSHA1": "eUQ5LpPgbXtTHoNH/jeSLBH6BRs=",
+			"path": "github.com/pierrec/lz4",
+			"revision": "062282ea0dcff40c9fb8525789eef9644b1fbd6e",
+			"revisionTime": "2019-02-22T15:37:22Z"
+		},
+		{
+			"checksumSHA1": "YzBjaYp2pbrwPhT6XHY0CBSh71A=",
+			"path": "github.com/pierrec/lz4/internal/xxh32",
+			"revision": "062282ea0dcff40c9fb8525789eef9644b1fbd6e",
+			"revisionTime": "2019-02-22T15:37:22Z"
 		},
 		{
 			"checksumSHA1": "Nt4Ol6ZM2n0XD5zatxjwEYBpQnw=",
