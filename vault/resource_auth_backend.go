@@ -8,6 +8,7 @@ import (
 
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/vault/api"
+	"github.com/terraform-providers/terraform-provider-vault/util"
 )
 
 func authBackendResource() *schema.Resource {
@@ -17,6 +18,8 @@ func authBackendResource() *schema.Resource {
 		Create: authBackendWrite,
 		Delete: authBackendDelete,
 		Read:   authBackendRead,
+		Update: authBackendUpdate,
+		Exists: authBackendExists,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
@@ -50,41 +53,80 @@ func authBackendResource() *schema.Resource {
 
 			"description": {
 				Type:        schema.TypeString,
-				ForceNew:    true,
 				Optional:    true,
 				Description: "The description of the auth backend",
 			},
 
 			"default_lease_ttl_seconds": {
 				Type:        schema.TypeInt,
-				Required:    false,
 				Optional:    true,
 				Computed:    true,
-				ForceNew:    true,
 				Description: "Default lease duration in seconds",
 			},
 
 			"max_lease_ttl_seconds": {
 				Type:        schema.TypeInt,
-				Required:    false,
 				Optional:    true,
 				Computed:    true,
-				ForceNew:    true,
 				Description: "Maximum possible lease duration in seconds",
+			},
+
+			"audit_non_hmac_request_keys": {
+				Type:     schema.TypeSet,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Description: "List of keys that will not be HMAC'd by audit devices in the request data object.",
+			},
+
+			"audit_non_hmac_response_keys": {
+				Type:     schema.TypeSet,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Description: "List of keys that will not be HMAC'd by audit devices in the response data object.",
 			},
 
 			"listing_visibility": {
 				Type:        schema.TypeString,
-				ForceNew:    true,
 				Optional:    true,
 				Description: "Speficies whether to show this mount in the UI-specific listing endpoint",
 			},
 
+			"passthrough_request_headers": {
+				Type:     schema.TypeSet,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Description: "List of headers to whitelist and pass from the request to the plugin. ",
+			},
+
+			"allowed_response_headers": {
+				Type:     schema.TypeSet,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Description: "List of headers to whitelist, allowing a plugin to include them in the response.",
+			},
+
 			"local": {
 				Type:        schema.TypeBool,
-				ForceNew:    true,
 				Optional:    true,
-				Description: "Specifies if the auth method is local only",
+				Description: "(Vault Enterprise) Specifies if the auth method is local only",
+			},
+
+			"seal_wrap": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Description: "(Vault Enterprise) Enable seal wrapping for the mount, causing values stored by the mount to be wrapped by the seal's encryption capability.",
 			},
 
 			"accessor": {
@@ -106,9 +148,12 @@ func authBackendWrite(d *schema.ResourceData, meta interface{}) error {
 		Type:        mountType,
 		Description: d.Get("description").(string),
 		Config: api.AuthConfigInput{
-			DefaultLeaseTTL:   fmt.Sprintf("%ds", d.Get("default_lease_ttl_seconds")),
-			MaxLeaseTTL:       fmt.Sprintf("%ds", d.Get("max_lease_ttl_seconds")),
-			ListingVisibility: d.Get("listing_visibility").(string),
+			DefaultLeaseTTL:           fmt.Sprintf("%ds", d.Get("default_lease_ttl_seconds")),
+			MaxLeaseTTL:               fmt.Sprintf("%ds", d.Get("max_lease_ttl_seconds")),
+			AuditNonHMACRequestKeys:   util.ToStringArray(d.Get("audit_non_hmac_request_keys").(*schema.Set).List()),
+			AuditNonHMACResponseKeys:  util.ToStringArray(d.Get("audit_non_hmac_response_keys").(*schema.Set).List()),
+			ListingVisibility:         d.Get("listing_visibility").(string),
+			PassthroughRequestHeaders: util.ToStringArray(d.Get("passthrough_request_headers").(*schema.Set).List()),
 		},
 		Local: d.Get("local").(bool),
 	}
