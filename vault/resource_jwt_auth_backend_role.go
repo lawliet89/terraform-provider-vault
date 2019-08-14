@@ -180,7 +180,7 @@ func jwtAuthBackendRoleCreate(d *schema.ResourceData, meta interface{}) error {
 	path := jwtAuthBackendRolePath(backend, role)
 
 	log.Printf("[DEBUG] Writing JWT auth backend role %q", path)
-	data := jwtAuthBackendRoleDataToWrite(d, true)
+	data := jwtAuthBackendRoleDataToWrite(d)
 	_, err := client.Logical().Write(path, data)
 	if err != nil {
 		return fmt.Errorf("error writing JWT auth backend role %q: %s", path, err)
@@ -374,7 +374,7 @@ func jwtAuthBackendRoleUpdate(d *schema.ResourceData, meta interface{}) error {
 	path := d.Id()
 
 	log.Printf("[DEBUG] Updating JWT auth backend role %q", path)
-	data := jwtAuthBackendRoleDataToWrite(d, false)
+	data := jwtAuthBackendRoleDataToWrite(d)
 	_, err := client.Logical().Write(path, data)
 
 	d.SetId(path)
@@ -458,10 +458,10 @@ func jwtAuthBackendRoleBackendFromPath(path string) (string, error) {
 	return res[1], nil
 }
 
-func jwtAuthBackendRoleDataToWrite(d *schema.ResourceData, create bool) map[string]interface{} {
+func jwtAuthBackendRoleDataToWrite(d *schema.ResourceData) map[string]interface{} {
 	data := map[string]interface{}{}
 
-	updateTokenFields(d, data, create)
+	updateTokenFields(d, data)
 
 	data["bound_audiences"] = util.TerraformSetToStringArray(d.Get("bound_audiences"))
 	data["user_claim"] = d.Get("user_claim").(string)

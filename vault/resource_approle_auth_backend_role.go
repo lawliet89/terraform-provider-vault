@@ -115,10 +115,10 @@ func approleAuthBackendRoleResource() *schema.Resource {
 	}
 }
 
-func approleAuthBackendRoleUpdateFields(d *schema.ResourceData, data map[string]interface{}, create bool) {
-	updateTokenFields(d, data, create)
+func approleAuthBackendRoleUpdateFields(d *schema.ResourceData, data map[string]interface{}) {
+	updateTokenFields(d, data)
 
-	if create {
+	if d.IsNewResource() {
 		if v, ok := d.GetOkExists("bind_secret_id"); ok {
 			data["bind_secret_id"] = v.(bool)
 		}
@@ -190,7 +190,7 @@ func approleAuthBackendRoleCreate(d *schema.ResourceData, meta interface{}) erro
 	log.Printf("[DEBUG] Writing AppRole auth backend role %q", path)
 
 	data := map[string]interface{}{}
-	approleAuthBackendRoleUpdateFields(d, data, true)
+	approleAuthBackendRoleUpdateFields(d, data)
 
 	_, err := client.Logical().Write(path, data)
 	if err != nil {
@@ -301,7 +301,7 @@ func approleAuthBackendRoleUpdate(d *schema.ResourceData, meta interface{}) erro
 	log.Printf("[DEBUG] Updating AppRole auth backend role %q", path)
 
 	data := map[string]interface{}{}
-	approleAuthBackendRoleUpdateFields(d, data, false)
+	approleAuthBackendRoleUpdateFields(d, data)
 
 	_, err := client.Logical().Write(path, data)
 

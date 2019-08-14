@@ -170,7 +170,7 @@ func certAuthResourceWrite(d *schema.ResourceData, meta interface{}) error {
 	path := certCertResourcePath(backend, name)
 
 	data := map[string]interface{}{}
-	updateTokenFields(d, data, true)
+	updateTokenFields(d, data)
 
 	data["certificate"] = d.Get("certificate")
 
@@ -240,7 +240,7 @@ func certAuthResourceUpdate(d *schema.ResourceData, meta interface{}) error {
 	path := d.Id()
 
 	data := map[string]interface{}{}
-	updateTokenFields(d, data, false)
+	updateTokenFields(d, data)
 
 	data["certificate"] = d.Get("certificate")
 

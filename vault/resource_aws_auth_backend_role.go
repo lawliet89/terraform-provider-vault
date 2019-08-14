@@ -301,7 +301,7 @@ func awsAuthBackendRoleCreate(d *schema.ResourceData, meta interface{}) error {
 	data := map[string]interface{}{
 		"auth_type": authType,
 	}
-	updateTokenFields(d, data, true)
+	updateTokenFields(d, data)
 
 	// Deprecated Fields
 	if v, ok := d.GetOk("ttl"); ok {
@@ -565,7 +565,7 @@ func awsAuthBackendRoleUpdate(d *schema.ResourceData, meta interface{}) error {
 	inferred := d.Get("inferred_entity_type").(string)
 
 	data := map[string]interface{}{}
-	updateTokenFields(d, data, false)
+	updateTokenFields(d, data)
 
 	// Deprecated Fields
 	if d.HasChange("ttl") {

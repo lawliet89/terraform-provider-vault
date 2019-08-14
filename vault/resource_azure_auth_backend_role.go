@@ -148,7 +148,7 @@ func azureAuthBackendRoleCreate(d *schema.ResourceData, meta interface{}) error 
 	log.Printf("[DEBUG] Writing Azure auth backend role %q", path)
 
 	data := map[string]interface{}{}
-	updateTokenFields(d, data, true)
+	updateTokenFields(d, data)
 
 	// Deprecated Fields
 	if v, ok := d.GetOk("ttl"); ok {
@@ -347,7 +347,7 @@ func azureAuthBackendRoleUpdate(d *schema.ResourceData, meta interface{}) error 
 	log.Printf("[DEBUG] Updating Azure auth backend role %q", path)
 
 	data := map[string]interface{}{}
-	updateTokenFields(d, data, false)
+	updateTokenFields(d, data)
 
 	// Deprecated Fields
 	if d.HasChange("ttl") {

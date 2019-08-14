@@ -126,8 +126,8 @@ func kubernetesAuthBackendRolePath(backend, role string) string {
 	return "auth/" + strings.Trim(backend, "/") + "/role/" + strings.Trim(role, "/")
 }
 
-func kubernetesAuthBackendRoleUpdateFields(d *schema.ResourceData, data map[string]interface{}, create bool) {
-	updateTokenFields(d, data, create)
+func kubernetesAuthBackendRoleUpdateFields(d *schema.ResourceData, data map[string]interface{}) {
+	updateTokenFields(d, data)
 
 	if boundServiceAccountNames, ok := d.GetOk("bound_service_account_names"); ok {
 		data["bound_service_account_names"] = boundServiceAccountNames.(*schema.Set).List()
@@ -187,7 +187,7 @@ func kubernetesAuthBackendRoleCreate(d *schema.ResourceData, meta interface{}) e
 	log.Printf("[DEBUG] Writing Kubernetes auth backend role %q", path)
 
 	data := map[string]interface{}{}
-	kubernetesAuthBackendRoleUpdateFields(d, data, true)
+	kubernetesAuthBackendRoleUpdateFields(d, data)
 
 	_, err := client.Logical().Write(path, data)
 	if err != nil {
@@ -327,7 +327,7 @@ func kubernetesAuthBackendRoleUpdate(d *schema.ResourceData, meta interface{}) e
 	log.Printf("[DEBUG] Updating Kubernetes auth backend role %q", path)
 
 	data := map[string]interface{}{}
-	kubernetesAuthBackendRoleUpdateFields(d, data, false)
+	kubernetesAuthBackendRoleUpdateFields(d, data)
 
 	_, err := client.Logical().Write(path, data)
 	if err != nil {

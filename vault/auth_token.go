@@ -190,8 +190,8 @@ func setTokenFields(d *schema.ResourceData, data map[string]interface{}, config 
 
 }
 
-func updateTokenFields(d *schema.ResourceData, data map[string]interface{}, create bool) {
-	if create {
+func updateTokenFields(d *schema.ResourceData, data map[string]interface{}) {
+	if d.IsNewResource() {
 		if v, ok := d.GetOk("token_bound_cidrs"); ok {
 			data["token_bound_cidrs"] = v.(*schema.Set).List()
 		}

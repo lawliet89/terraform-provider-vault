@@ -157,8 +157,8 @@ func gcpRoleResourcePath(backend, role string) string {
 	return "auth/" + strings.Trim(backend, "/") + "/role/" + strings.Trim(role, "/")
 }
 
-func gcpRoleUpdateFields(d *schema.ResourceData, data map[string]interface{}, create bool) {
-	updateTokenFields(d, data, create)
+func gcpRoleUpdateFields(d *schema.ResourceData, data map[string]interface{}) {
+	updateTokenFields(d, data)
 
 	if v, ok := d.GetOk("type"); ok {
 		data["type"] = v.(string)
@@ -230,7 +230,7 @@ func gcpAuthResourceCreate(d *schema.ResourceData, meta interface{}) error {
 	path := gcpRoleResourcePath(backend, role)
 
 	data := map[string]interface{}{}
-	gcpRoleUpdateFields(d, data, true)
+	gcpRoleUpdateFields(d, data)
 
 	log.Printf("[DEBUG] Writing role %q to GCP auth backend", path)
 	d.SetId(path)
@@ -249,7 +249,7 @@ func gcpAuthResourceUpdate(d *schema.ResourceData, meta interface{}) error {
 	path := d.Id()
 
 	data := map[string]interface{}{}
-	gcpRoleUpdateFields(d, data, false)
+	gcpRoleUpdateFields(d, data)
 
 	log.Printf("[DEBUG] Updating role %q in GCP auth backend", path)
 	_, err := client.Logical().Write(path, data)
