@@ -107,6 +107,7 @@ func addTokenFields(fields map[string]*schema.Schema, config *addTokenFieldsConf
 	}
 }
 
+// Always set fields to the data map
 func setTokenFields(d *schema.ResourceData, data map[string]interface{}, config *addTokenFieldsConfig) {
 	data["token_no_default_policy"] = d.Get("token_no_default_policy").(bool)
 	data["token_type"] = d.Get("token_type").(string)

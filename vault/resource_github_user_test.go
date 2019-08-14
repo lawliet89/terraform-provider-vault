@@ -47,6 +47,41 @@ func TestAccGithubUser_basic(t *testing.T) {
 	})
 }
 
+func TestAccGithubUser_upgrade(t *testing.T) {
+	backend := acctest.RandomWithPrefix("github")
+	resName := "vault_github_user.user"
+	user := "john_doe"
+	resource.Test(t, resource.TestCase{
+		Providers:    testProviders,
+		PreCheck:     func() { testAccPreCheck(t) },
+		CheckDestroy: testAccGithubUserCheckDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccGithubUserConfig_deprecated(backend, user, []string{"admin", "security"}),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resName, "id", "auth/"+backend+"/map/users/"+user),
+					resource.TestCheckResourceAttr(resName, "backend", backend),
+					resource.TestCheckResourceAttr(resName, "user", "john_doe"),
+					resource.TestCheckResourceAttr(resName, "policies.#", "2"),
+					resource.TestCheckResourceAttr(resName, "token_policies.#", "0"),
+				),
+			},
+			{
+				Config: testAccGithubUserConfig_basic(backend, user, []string{"admin", "security"}),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resName, "id", "auth/"+backend+"/map/users/"+user),
+					resource.TestCheckResourceAttr(resName, "backend", backend),
+					resource.TestCheckResourceAttr(resName, "user", "john_doe"),
+					resource.TestCheckResourceAttr(resName, "policies.#", "0"),
+					resource.TestCheckResourceAttr(resName, "token_policies.#", "2"),
+					resource.TestCheckResourceAttr(resName, "token_ttl", "300"),
+					resource.TestCheckResourceAttr(resName, "token_max_ttl", "1800"),
+				),
+			},
+		},
+	})
+}
+
 func TestAccGithubUser_importBasic(t *testing.T) {
 	backend := acctest.RandomWithPrefix("github")
 	resName := "vault_github_user.user"
@@ -112,6 +147,22 @@ resource "vault_github_user" "user" {
 	token_policies = %s
 	token_ttl = 300
 	token_max_ttl = 1800
+}
+`, backend, user, p)
+}
+
+func testAccGithubUserConfig_deprecated(backend string, user string, policies []string) string {
+	p, _ := json.Marshal(policies)
+	return fmt.Sprintf(`
+resource "vault_github_auth_backend" "gh" {
+	path = "%s"
+  	organization = "vault"
+}
+
+resource "vault_github_user" "user" {
+	backend = "${vault_github_auth_backend.gh.id}"
+	user = "%s"
+	policies = %s
 }
 `, backend, user, p)
 }

@@ -49,6 +49,42 @@ func TestAccGithubTeam_basic(t *testing.T) {
 	})
 }
 
+func TestAccGithubTeam_upgrade(t *testing.T) {
+	backend := acctest.RandomWithPrefix("github")
+	resName := "vault_github_team.team"
+	team := "my-team-slugified"
+
+	resource.Test(t, resource.TestCase{
+		Providers:    testProviders,
+		PreCheck:     func() { testAccPreCheck(t) },
+		CheckDestroy: testAccGithubTeamCheckDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccGithubTeamConfig_deprecated(backend, team, []string{"admin", "security"}),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resName, "id", "auth/"+backend+"/map/teams/"+team),
+					resource.TestCheckResourceAttr(resName, "backend", backend),
+					resource.TestCheckResourceAttr(resName, "team", "my-team-slugified"),
+					resource.TestCheckResourceAttr(resName, "policies.#", "2"),
+					resource.TestCheckResourceAttr(resName, "token_policies.#", "0"),
+				),
+			},
+			{
+				Config: testAccGithubTeamConfig_basic(backend, team, []string{"admin", "security"}),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resName, "id", "auth/"+backend+"/map/teams/"+team),
+					resource.TestCheckResourceAttr(resName, "backend", backend),
+					resource.TestCheckResourceAttr(resName, "team", "my-team-slugified"),
+					resource.TestCheckResourceAttr(resName, "policies.#", "0"),
+					resource.TestCheckResourceAttr(resName, "token_policies.#", "2"),
+					resource.TestCheckResourceAttr(resName, "token_ttl", "300"),
+					resource.TestCheckResourceAttr(resName, "token_max_ttl", "1800"),
+				),
+			},
+		},
+	})
+}
+
 func TestAccGithubTeam_teamConfigError(t *testing.T) {
 	backend := acctest.RandomWithPrefix("github")
 	team := "Team With Spaces"
@@ -130,6 +166,22 @@ resource "vault_github_team" "team" {
 	token_policies = %s
 	token_ttl = 300
 	token_max_ttl = 1800
+}
+`, backend, team, p)
+}
+
+func testAccGithubTeamConfig_deprecated(backend string, team string, policies []string) string {
+	p, _ := json.Marshal(policies)
+	return fmt.Sprintf(`
+resource "vault_github_auth_backend" "gh" {
+  path = "%s"
+  organization = "vault"
+}
+
+resource "vault_github_team" "team" {
+	backend = "${vault_github_auth_backend.gh.id}"
+	team = "%s"
+	policies = %s
 }
 `, backend, team, p)
 }
