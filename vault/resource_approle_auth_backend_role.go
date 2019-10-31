@@ -87,6 +87,11 @@ func approleAuthBackendRoleResource() *schema.Resource {
 			Description:   "Policies to be set on tokens issued using this AppRole.",
 			Deprecated:    "use `token_policies` instead if you are running Vault >= 1.2",
 			ConflictsWith: []string{"token_policies"},
+			// Suppress the diff if `token_policies` is set
+			DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+				_, set := d.GetOkExists("token_policies")
+				return set
+			},
 		},
 		"period": {
 			Type:          schema.TypeInt,
@@ -94,6 +99,11 @@ func approleAuthBackendRoleResource() *schema.Resource {
 			Description:   "Number of seconds to set the TTL to for issued tokens upon renewal. Makes the token a periodic token, which will never expire as long as it is renewed before the TTL each period.",
 			Deprecated:    "use `token_period` instead if you are running Vault >= 1.2",
 			ConflictsWith: []string{"token_period"},
+			// Suppress the diff if `token_period` is set
+			DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+				_, set := d.GetOkExists("token_period")
+				return set
+			},
 		},
 	}
 
@@ -254,24 +264,6 @@ func approleAuthBackendRoleRead(d *schema.ResourceData, meta interface{}) error 
 	} else {
 		if v, ok := resp.Data["secret_id_bound_cidrs"]; ok {
 			d.Set("secret_id_bound_cidrs", v)
-		}
-	}
-
-	// Check if the user is using the deprecated `policies`
-	if _, deprecated := d.GetOk("policies"); deprecated {
-		// Then we see if `token_policies` was set and unset it
-		// Vault will still return `policies`
-		if _, ok := d.GetOk("token_policies"); ok {
-			d.Set("token_policies", nil)
-		}
-	}
-
-	// Check if the user is using the deprecated `period`
-	if _, deprecated := d.GetOk("period"); deprecated {
-		// Then we see if `token_period` was set and unset it
-		// Vault will still return `period`
-		if _, ok := d.GetOk("token_period"); ok {
-			d.Set("token_period", nil)
 		}
 	}
 

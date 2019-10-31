@@ -388,6 +388,73 @@ func TestAccAppRoleAuthBackendRole_deprecatedFullUpdate(t *testing.T) {
 	})
 }
 
+// Check that after upgrading from deprecated fields to `token_*` fields, it works properly
+// and that there are no permanent diffs
+func TestAccAppRoleAuthBackendRole_deprecatedUpgrade(t *testing.T) {
+	backend := acctest.RandomWithPrefix("approle")
+	role := acctest.RandomWithPrefix("test-role")
+	roleID := acctest.RandomWithPrefix("test-role-id")
+	newRoleID := acctest.RandomWithPrefix("test-role-id")
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testProviders,
+		CheckDestroy: testAccCheckAppRoleAuthBackendRoleDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccAppRoleAuthBackendRoleConfig_deprecatedPreUpgrade(backend, role, roleID),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("vault_approle_auth_backend_role.role",
+						"backend", backend),
+					resource.TestCheckResourceAttr("vault_approle_auth_backend_role.role",
+						"role_name", role),
+					resource.TestCheckResourceAttr("vault_approle_auth_backend_role.role",
+						"role_id", roleID),
+					resource.TestCheckResourceAttr("vault_approle_auth_backend_role.role",
+						"bind_secret_id", "true"),
+					resource.TestCheckResourceAttr("vault_approle_auth_backend_role.role",
+						"bound_cidr_list.#", "2"),
+					resource.TestCheckResourceAttr("vault_approle_auth_backend_role.role",
+						"policies.#", "2"),
+					resource.TestCheckResourceAttr("vault_approle_auth_backend_role.role",
+						"period", "120"),
+					resource.TestCheckResourceAttr("vault_approle_auth_backend_role.role",
+						"secret_id_bound_cidrs.#", "0"),
+					resource.TestCheckResourceAttr("vault_approle_auth_backend_role.role",
+						"token_policies.#", "0"),
+					resource.TestCheckResourceAttr("vault_approle_auth_backend_role.role",
+						"token_period", "0"),
+				),
+			},
+			{
+				Config: testAccAppRoleAuthBackendRoleConfig_deprecatedPostUpgrade(backend, role, newRoleID),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("vault_approle_auth_backend_role.role",
+						"backend", backend),
+					resource.TestCheckResourceAttr("vault_approle_auth_backend_role.role",
+						"role_name", role),
+					resource.TestCheckResourceAttr("vault_approle_auth_backend_role.role",
+						"role_id", roleID),
+					resource.TestCheckResourceAttr("vault_approle_auth_backend_role.role",
+						"bind_secret_id", "true"),
+					resource.TestCheckResourceAttr("vault_approle_auth_backend_role.role",
+						"bound_cidr_list.#", "2"),
+					resource.TestCheckResourceAttr("vault_approle_auth_backend_role.role",
+						"policies.#", "2"),
+					resource.TestCheckResourceAttr("vault_approle_auth_backend_role.role",
+						"period", "120"),
+					resource.TestCheckResourceAttr("vault_approle_auth_backend_role.role",
+						"secret_id_bound_cidrs.#", "2"),
+					resource.TestCheckResourceAttr("vault_approle_auth_backend_role.role",
+						"token_policies.#", "2"),
+					resource.TestCheckResourceAttr("vault_approle_auth_backend_role.role",
+						"token_period", "100"),
+				),
+			},
+		},
+	})
+}
+
 func testAccCheckAppRoleAuthBackendRoleDestroy(s *terraform.State) error {
 	client := testProvider.Meta().(*api.Client)
 
@@ -518,5 +585,40 @@ resource "vault_approle_auth_backend_role" "role" {
   token_num_uses = 24
   token_ttl = 7200
   token_max_ttl = 10800
+}`, backend, role, roleID)
+}
+
+func testAccAppRoleAuthBackendRoleConfig_deprecatedPreUpgrade(backend, role, roleID string) string {
+	return fmt.Sprintf(`
+resource "vault_auth_backend" "approle" {
+  type = "approle"
+  path = "%s"
+}
+
+resource "vault_approle_auth_backend_role" "role" {
+  backend = "${vault_auth_backend.approle.path}"
+  role_name = "%s"
+  role_id = "%s"
+  bind_secret_id = true
+  policies = ["default", "dev"]
+  period = 120
+}`, backend, role, roleID)
+}
+
+func testAccAppRoleAuthBackendRoleConfig_deprecatedPostUpgrade(backend, role, roleID string) string {
+	return fmt.Sprintf(`
+resource "vault_auth_backend" "approle" {
+  type = "approle"
+  path = "%s"
+}
+
+resource "vault_approle_auth_backend_role" "role" {
+  backend = "${vault_auth_backend.approle.path}"
+  role_name = "%s"
+  role_id = "%s"
+  bind_secret_id = true
+  secret_id_bound_cidrs = ["10.150.0.0/20", "10.152.0.0/20"]
+  token_policies = ["default", "dev"]
+  token_period = 120
 }`, backend, role, roleID)
 }
