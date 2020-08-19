@@ -1,7 +1,6 @@
 package vault
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 	"strings"
@@ -21,11 +20,13 @@ func gcpAuthBackendResource() *schema.Resource {
 		Delete: gcpAuthBackendDelete,
 		Exists: gcpAuthBackendExists,
 
+		DeprecationMessage: "mount with `vault_auth_backend` and configure with `vault_gcp_auth_config` instead",
+
 		Schema: map[string]*schema.Schema{
 			"credentials": {
 				Type:         schema.TypeString,
-				StateFunc:    NormalizeCredentials,
-				ValidateFunc: ValidateCredentials,
+				StateFunc:    NormalizeGCPCredentials,
+				ValidateFunc: ValidateGCPCredentials,
 				Sensitive:    true,
 				Optional:     true,
 			},
@@ -64,41 +65,6 @@ func gcpAuthBackendResource() *schema.Resource {
 			},
 		},
 	}
-}
-
-func ValidateCredentials(configI interface{}, k string) ([]string, []error) {
-	credentials := configI.(string)
-	dataMap := map[string]interface{}{}
-	err := json.Unmarshal([]byte(credentials), &dataMap)
-	if err != nil {
-		return nil, []error{err}
-	}
-	return nil, nil
-}
-
-func NormalizeCredentials(configI interface{}) string {
-	credentials := configI.(string)
-
-	dataMap := map[string]interface{}{}
-	err := json.Unmarshal([]byte(credentials), &dataMap)
-	if err != nil {
-		// The validate function should've taken care of this.
-		log.Printf("[ERROR] Invalid JSON data in vault_gcp_auth_backend: %s", err)
-		return ""
-	}
-
-	ret, err := json.Marshal(dataMap)
-	if err != nil {
-		// Should never happen.
-		log.Printf("[ERROR] Problem normalizing JSON for vault_gcp_auth_backend: %s", err)
-		return credentials
-	}
-
-	return string(ret)
-}
-
-func gcpAuthBackendConfigPath(path string) string {
-	return "auth/" + strings.Trim(path, "/") + "/config"
 }
 
 func gcpAuthBackendWrite(d *schema.ResourceData, meta interface{}) error {
